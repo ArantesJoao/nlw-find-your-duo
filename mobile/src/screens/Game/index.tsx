@@ -1,21 +1,22 @@
-import { useEffect, useState } from "react";
-import { TouchableOpacity, View, Image, FlatList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { TouchableOpacity, View, Image, FlatList, Text } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Entypo } from "@expo/vector-icons";
-
-import { styles } from "./styles";
-import { THEME } from "../../theme";
-import logoImg from "../../assets/logo-nlw-esports.png";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 import { GameParams } from "../../@types/navigation";
+import { Entypo } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 
-import { Background } from "../../components/Background";
-import { Heading } from "../../components/Heading";
+import logoImg from "../../assets/logo-nlw-esports.png";
+import { THEME } from "../../theme";
+import { styles } from "./styles";
+
 import { DuoCard, DuoCardProps } from "../../components/DuoCard";
+import { Background } from "../../components/Background";
+import { DuoMatch } from "../../components/DuoMatch";
+import { Heading } from "../../components/Heading";
 
 export function Game() {
   const [duos, setDuos] = useState<DuoCardProps[]>([]);
+  const [duoSelected, setDuoSelected] = useState("");
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -23,6 +24,12 @@ export function Game() {
 
   function handleGoBack() {
     navigation.goBack();
+  }
+
+  async function getDiscordUser(adsId: string) {
+    fetch(`http://192.168.0.208:3333/games/${adsId}/discord`)
+      .then((response) => response.json())
+      .then((data) => setDuoSelected(data.discord));
   }
 
   useEffect(() => {
@@ -58,7 +65,25 @@ export function Game() {
         <FlatList
           data={duos}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <DuoCard data={item} />}
+          renderItem={({ item }) => (
+            <DuoCard data={item} onConnect={() => getDiscordUser(item.id)} />
+          )}
+          horizontal
+          style={styles.containerList}
+          contentContainerStyle={[
+            duos.length > 0 ? styles.contentList : styles.emptyListContent,
+          ]}
+          showsHorizontalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <Text style={styles.emptyListText}>
+              There are no ads for this game yet!
+            </Text>
+          )}  
+        />
+        <DuoMatch
+          visible={duoSelected.length > 0}
+          discord={duoSelected}
+          onClose={() => setDuoSelected("")}
         />
       </SafeAreaView>
     </Background>
