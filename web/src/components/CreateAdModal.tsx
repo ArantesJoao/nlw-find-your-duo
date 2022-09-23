@@ -1,6 +1,13 @@
-import { Check, GameController } from "phosphor-react";
+import {
+  Check,
+  GameController,
+  CaretDown,
+  CaretUp,
+  AlignCenterVertical,
+} from "phosphor-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Checkbox from "@radix-ui/react-checkbox";
+import * as Select from "@radix-ui/react-select";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import axios from "axios";
 
@@ -63,24 +70,41 @@ export function CreateAdModal() {
             <label htmlFor="game" className="font-semibold">
               Which game?
             </label>
-            <select
-              name="game"
-              id="game"
-              className="bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500 appearance-none"
-              defaultValue=""
-            >
-              <option disabled value="">
-                Select the game you want to play
-              </option>
-
-              {games.map((game) => {
-                return (
-                  <option key={game.id} value={game.id}>
-                    {game.title}
-                  </option>
-                );
-              })}
-            </select>
+            <div className="bg-zinc-900 py-3 px-4 rounded text-sm">
+              <Select.Root>
+                <Select.Trigger>
+                  <Select.Value
+                    className="text-zinc-500"
+                    placeholder="Select the game you want to play"
+                  />
+                </Select.Trigger>
+                <Select.Portal className="w-[416px]">
+                  <Select.Content>
+                    <Select.ScrollUpButton className="bg-zinc-900 flex justify-center rounded py-1.5 text-white">
+                      <CaretUp />
+                    </Select.ScrollUpButton>
+                    <Select.Viewport className="bg-zinc-900 py-1.5 px-2 rounded text-sm">
+                      {games.map((game) => {
+                        return (
+                          <Select.Item
+                            className="text-white pl-6 py-1.5 flex rounded hover:bg-zinc-700"
+                            value={game.id}
+                          >
+                            <Select.ItemIndicator>
+                              <Check className="w-5 h-5 pr-1 text-emerald-400 absolute right-[387px]" />
+                            </Select.ItemIndicator>
+                            <Select.ItemText>{game.title}</Select.ItemText>
+                          </Select.Item>
+                        );
+                      })}
+                    </Select.Viewport>
+                    <Select.ScrollDownButton className="bg-zinc-900 flex justify-center rounded py-1.5 text-white">
+                      <CaretDown />
+                    </Select.ScrollDownButton>
+                  </Select.Content>
+                </Select.Portal>
+              </Select.Root>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
